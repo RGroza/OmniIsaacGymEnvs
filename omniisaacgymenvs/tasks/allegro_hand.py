@@ -45,6 +45,11 @@ class AllegroHandTask(InHandManipulationTask):
         self.update_config(sim_config)
 
         InHandManipulationTask.__init__(self, name=name, env=env)
+
+        self.start_pitch = 5.
+        self.start_roll = 0.
+        self.get_starting_positions()
+
         return
 
     def update_config(self, sim_config):
@@ -72,9 +77,33 @@ class AllegroHandTask(InHandManipulationTask):
 
         InHandManipulationTask.update_config(self)
 
+    def euler_to_quaternion_tensor(self, r, p, y):        
+        cr, sr = np.cos(np.radians(r) / 2), np.sin(np.radians(r) / 2)
+        cp, sp = np.cos(np.radians(p) / 2), np.sin(np.radians(p) / 2)
+        cy, sy = np.cos(np.radians(y) / 2), np.sin(np.radians(y) / 2)
+
+        w = cr * cp * cy + sr * sp * sy
+        x = sr * cp * cy - cr * sp * sy
+        y = cr * sp * cy + sr * cp * sy
+        z = cr * cp * sy - sr * sp * cy
+
+        return torch.tensor([w, x, y, z], device=self.device)
+
+    def quaternion_multiply(self, q1, q2):
+        w1, x1, y1, z1 = q1
+        w2, x2, y2, z2 = q2
+
+        w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+        x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+        y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+        z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+
+        return torch.tensor([w, x, y, z], device=self.device)
+
     def get_starting_positions(self):
-        self.hand_start_translation = torch.tensor([0.0, 0.0, 0.5], device=self.device)
-        self.hand_start_orientation = torch.tensor([0.257551, 0.283045, 0.683330, -0.621782], device=self.device)
+        self.hand_start_translation = torch.tensor([0., 0., 0.5], device=self.device)
+        self.hand_start_orientation = self.quaternion_multiply(self.euler_to_quaternion_tensor(self.start_pitch - 5.4, self.start_roll, 0.),
+                                                                torch.tensor([0.257551, 0.283045, 0.683330, -0.621782], device=self.device))
         self.pose_dy, self.pose_dz = -0.2, 0.06
 
     def get_hand(self):

@@ -47,26 +47,25 @@ class AllegroHand(Robot):
         translation: Optional[torch.tensor] = None,
         orientation: Optional[torch.tensor] = None,
     ) -> None:
-        self._usd_path = usd_path
         self._name = name
+        self._usd_path = usd_path
 
         if self._usd_path is None:
-            assets_root_path = get_assets_root_path()
-            if assets_root_path is None:
-                carb.log_error("Could not find Isaac Sim assets folder")
-            self._usd_path = assets_root_path + "/Isaac/Robots/AllegroHand/allegro_hand_instanceable.usd"
+            self._usd_path = "/home/robert/AllegroHand/allegro_urdf/allegro_hand/allegro_hand.usd"
+            # self._usd_path = get_assets_root_path() + "/Isaac/Robots/AllegroHand/allegro_hand_instanceable.usd"
 
-        self._position = torch.tensor([0.0, 0.0, 0.5]) if translation is None else translation
-        self._orientation = (
-            torch.tensor([0.257551, 0.283045, 0.683330, -0.621782]) if orientation is None else orientation
-        )
+        self._translation = translation
+        self._orientation = orientation
+
+        if self._translation is None or self._orientation is None:
+            print("********** Hand starting pose not defined! **********")
 
         add_reference_to_stage(self._usd_path, prim_path)
 
         super().__init__(
-            prim_path=prim_path,
+            prim_path=prim_path + "/allegro_mount",
             name=name,
-            translation=self._position,
+            translation=self._translation,
             orientation=self._orientation,
             articulation_controller=None,
         )
