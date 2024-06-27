@@ -51,7 +51,7 @@ class AllegroHand(Robot):
         self._usd_path = usd_path
 
         if self._usd_path is None:
-            self._usd_path = "/home/robert/AllegroHand/allegro_urdf/allegro_hand/allegro_hand.usd"
+            self._usd_path = "/home/robert/NVIDIA/OmniIsaacGymEnvs/omniisaacgymenvs/allegro_urdf/allegro_hand/allegro_hand.usd"
             # self._usd_path = get_assets_root_path() + "/Isaac/Robots/AllegroHand/allegro_hand_instanceable.usd"
 
         self._translation = translation
@@ -82,7 +82,7 @@ class AllegroHand(Robot):
                 rb.GetEnableGyroscopicForcesAttr().Set(False)
                 rb.GetAngularDampingAttr().Set(0.01)
                 rb.GetMaxLinearVelocityAttr().Set(1000)
-                rb.GetMaxAngularVelocityAttr().Set(64 / np.pi * 180)
+                rb.GetMaxAngularVelocityAttr().Set(6.283 / np.pi * 180)
                 rb.GetMaxDepenetrationVelocityAttr().Set(1000)
                 rb.GetMaxContactImpulseAttr().Set(1e32)
 
@@ -95,7 +95,7 @@ class AllegroHand(Robot):
             drive = UsdPhysics.DriveAPI.Apply(prim, "angular")
             drive.GetStiffnessAttr().Set(3 * np.pi / 180)
             drive.GetDampingAttr().Set(0.1 * np.pi / 180)
-            drive.GetMaxForceAttr().Set(0.5)
+            drive.GetMaxForceAttr().Set(0.35)
             revolute_joint = PhysxSchema.PhysxJointAPI.Get(stage, prim.GetPath())
             revolute_joint.GetJointFrictionAttr().Set(0.01)
         for child_prim in prim.GetChildren():

@@ -118,7 +118,7 @@ class AllegroHandTask(InHandManipulationTask):
             get_prim_at_path(allegro_hand.prim_path),
             self._sim_config.parse_actor_config("allegro_hand"),
         )
-        allegro_hand_prim = self._stage.GetPrimAtPath(allegro_hand.prim_path)
+        allegro_hand_prim = self._stage.GetPrimAtPath(self.default_zero_env_path).GetChildren()[0]
         allegro_hand.set_allegro_hand_properties(stage=self._stage, allegro_hand_prim=allegro_hand_prim)
         allegro_hand.set_motor_control_mode(
             stage=self._stage, allegro_hand_path=self.default_zero_env_path + "/allegro_hand"
