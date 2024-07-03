@@ -1,4 +1,4 @@
-task_name: ${task.name}
+task_name: AllegroHand
 experiment: ''
 num_envs: 1
 seed: 42
@@ -15,7 +15,7 @@ solver_type: 1
 test: true
 checkpoint: /home/robert/NVIDIA/OmniIsaacGymEnvs/omniisaacgymenvs/runs/AllegroHand/nn/AllegroHand.pth
 evaluation: false
-headless: false
+headless: true
 enable_livestream: false
 mt_timeout: 300
 enable_recording: false
@@ -35,7 +35,7 @@ task:
   name: AllegroHand
   physics_engine: ${..physics_engine}
   env:
-    numEnvs: ${resolve_default:8192,${...num_envs}}
+    numEnvs: 1
     envSpacing: 0.75
     episodeLength: 600
     clipObservations: 5.0
@@ -202,3 +202,8 @@ train:
         deterministic: true
         games_num: 100000
         print_stats: true
+override hydra/job_logging: disabled
+hydra:
+  output_subdir: null
+  run:
+    dir: .

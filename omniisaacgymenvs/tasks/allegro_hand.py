@@ -40,11 +40,12 @@ from omniisaacgymenvs.tasks.shared.in_hand_manipulation import InHandManipulatio
 
 
 class AllegroHandTask(InHandManipulationTask):
-    def __init__(self, name, sim_config, env, offset=None) -> None:
+    def __init__(self, name, sim_config, env, offset=None, ros_node=None) -> None:
 
         self.update_config(sim_config)
 
-        InHandManipulationTask.__init__(self, name=name, env=env)
+        print(f"AllegroHandTask: {ros_node}")
+        InHandManipulationTask.__init__(self, name=name, env=env, ros_node=ros_node)
 
         self.start_pitch = 5.
         self.start_roll = 0.

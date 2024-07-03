@@ -41,7 +41,7 @@ from omniisaacgymenvs.tasks.base.rl_task import RLTask
 
 
 class InHandManipulationTask(RLTask):
-    def __init__(self, name, env, offset=None) -> None:
+    def __init__(self, name, env, offset=None, ros_node=None) -> None:
 
         InHandManipulationTask.update_config(self)
 
@@ -59,6 +59,9 @@ class InHandManipulationTask(RLTask):
         self.av_factor = torch.tensor(self.av_factor, dtype=torch.float, device=self.device)
         self.total_successes = 0
         self.total_resets = 0
+
+        print(f"InHandManipulationTask: {ros_node}")
+        self.ros_node = ros_node
 
     def update_config(self):
         self._num_envs = self._task_cfg["env"]["numEnvs"]
@@ -370,6 +373,11 @@ class InHandManipulationTask(RLTask):
             rand_env_ids = torch.nonzero(torch.logical_and(rand_envs, reset_buf))
             self.dr.physics_view.step_randomization(rand_env_ids)
             self.randomization_buf[rand_env_ids] = 0
+
+        if self.ros_node:
+            print("Calling publish_joint_states")
+            print(self.cur_targets)
+            self.ros_node.publish_joint_states(torch.flatten(self.cur_targets).tolist())
 
     def is_done(self):
         pass

@@ -79,8 +79,8 @@ class RLGTrainer:
         )
 
 
-@hydra.main(version_base=None, config_name="config", config_path="../cfg")
-def parse_hydra_configs(cfg: DictConfig):
+# @hydra.main(version_base=None, config_name="config", config_path="../cfg")
+def parse_hydra_configs(cfg: DictConfig, ros_node=None):
 
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -133,10 +133,10 @@ def parse_hydra_configs(cfg: DictConfig):
         )
 
     # ensure checkpoints can be specified as relative paths
-    if cfg.checkpoint:
-        cfg.checkpoint = retrieve_checkpoint_path(cfg.checkpoint)
-        if cfg.checkpoint is None:
-            quit()
+    # if cfg.checkpoint:
+    #     cfg.checkpoint = retrieve_checkpoint_path(cfg.checkpoint)
+    #     if cfg.checkpoint is None:
+    #         quit()
 
     cfg_dict = omegaconf_to_dict(cfg)
     print_dict(cfg_dict)
@@ -147,7 +147,8 @@ def parse_hydra_configs(cfg: DictConfig):
     cfg.seed = set_seed(cfg.seed, torch_deterministic=cfg.torch_deterministic)
     cfg_dict["seed"] = cfg.seed
 
-    task = initialize_task(cfg_dict, env)
+    print(f"parse_hydra_configs: {ros_node}")
+    task = initialize_task(cfg_dict, env, init_sim=True, ros_node=ros_node)
 
     if cfg.wandb_activate and global_rank == 0:
         # Make sure to install WandB if you actually use this.

@@ -84,7 +84,7 @@ def import_tasks():
     return task_map, task_map_warp
 
 
-def initialize_task(config, env, init_sim=True):
+def initialize_task(config, env, init_sim=True, ros_node=None):
     from omniisaacgymenvs.utils.config_utils.sim_config import SimConfig
 
     sim_config = SimConfig(config)
@@ -94,9 +94,13 @@ def initialize_task(config, env, init_sim=True):
     if cfg["warp"]:
         task_map = task_map_warp
 
-    task = task_map[cfg["task_name"]](
-        name=cfg["task_name"], sim_config=sim_config, env=env
-    )
+    print(f"initialize_task: {ros_node}")
+    if cfg["task_name"] == "AllegroHand":
+        task = task_map["AllegroHand"]("AllegroHand", sim_config=sim_config, env=env, ros_node=ros_node)
+    else:
+        task = task_map[cfg["task_name"]](
+            name=cfg["task_name"], sim_config=sim_config, env=env
+        )
 
     backend = "warp" if cfg["warp"] else "torch"
 
